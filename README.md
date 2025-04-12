@@ -9,7 +9,7 @@ Integrations:
 
 To customize this template for your team and build a lot more, [book a demonstration here.](https://meet.abstra.app/demo?url=template-employee-registration)
 
-![A contract generator onboarding workflow built in Abstra](https://github.com/user-attachments/assets/c38cccdc-0279-4054-a93f-450c05454176)
+![A contract generator onboarding workflow built in Abstra](https://github.com/user-attachments/assets/673ea8bb-0553-4000-93b0-bd1f7223ff8a)
 
 ## Initial Configuration
 To use this project, some initial configurations are necessary:
