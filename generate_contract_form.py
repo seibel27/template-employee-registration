@@ -1,4 +1,4 @@
-import abstra.workflows as aw
+from abstra.tasks import get_tasks, send_task
 import os
 import re
 import shutil
@@ -12,8 +12,7 @@ from docx import Document
 from loguru import logger
 import pypandoc
 
-# getting data from workflow
-register_dict = aw.get_data("register_info")
+
 
 # In this code we are going to set a default document format with some tags to be filled
 # the tags are defined by {{tag_name}}
@@ -128,89 +127,99 @@ def render_upload(partial):
             return Page().read_file("Upload the contract adjusted", key="adj_contract_file", accepted_formats=[".docx"])
         
 
-template_overview_page = (
-    Page()
-    .display("Automatic Contract Generation", size="large")
-    .display("For correct use, please upload a .docx template that follows this instructions", size="medium")
-    .display_markdown('''
+# get the data from the task payload
+tasks = get_tasks()
+for task in tasks:
+
+    payload = task.get_payload()
+
+    register_dict = payload["register_info"]
+
+    template_overview_page = (
+        Page()
+        .display("Automatic Contract Generation", size="large")
+        .display("For correct use, please upload a .docx template that follows this instructions", size="medium")
+        .display_markdown('''
 - On your template, use {{tag_name}} to define the fields that will be filled with the employee's data.
 - Do not use spaces on the items to be replaced. Instead, use underscores (e.g. {{tag name}} needs to be written as {{tag_name}}).
 - Do not use accents or special characters on the field's name.
 - The {{tag_name}} must match the key in the dictionary that stores personal information in the workflow.
     ''')
-    .run()
+        .run()
     )
 
-contract_page = (
-    Page()
-    .read_dropdown(
-        "Contract Model",
-        ["New Contract", "Template Contract"],
-        key="existing_contract"
+    contract_page = (
+        Page()
+        .read_dropdown(
+            "Contract Model",
+            ["New Contract", "Template Contract"],
+            key="existing_contract"
+        )
+        .reactive(render)
+        .run()
     )
-    .reactive(render)
-    .run()
-)
 
-# gets the folder path to save the contracts
-contract_folder = get_persistent_dir() / "contracts"
+    # gets the folder path to save the contracts
+    contract_folder = get_persistent_dir() / "contracts"
 
-# if the folder doesnt exists, creates it 
-contract_folder.mkdir(parents=True, exist_ok=True)
+    # if the folder doesnt exists, creates it 
+    contract_folder.mkdir(parents=True, exist_ok=True)
 
-if register_dict["complement_address"] is None:
-    register_dict["complement_address"] = ""
+    if register_dict["complement_address"] is None:
+        register_dict["complement_address"] = ""
 
-if (contract_page["existing_contract"] == "New Contract"):
-    contract_file = contract_page["contract_file"].file.read()
-    output_filepath = generate_document(contract_file, register_dict["identification_number"], contract_folder)
-    aw.set_data("contract_data", {})
-else:
-    contract_file = open(f"contract_models/contract_template.docx", "rb").read()
-    contract_data = {
-        "started_at": register_dict["started_at"],
-        "name": register_dict["name"],
-        "position": register_dict["position"],
-        "number_address": register_dict["number_address"],
-        "complement_address": register_dict["complement_address"],
-        "district": register_dict["district"],
-        "address": register_dict["address"],
-        "country": register_dict["country"],
-        "zip_code": register_dict["zip_code"],
-        "personal_email": register_dict["personal_email"],
-        "internal_email": register_dict["internal_email"],
-        "phone_number": register_dict["phone_number"],
-        "salary": register_dict["salary"],
-        "bank_name": register_dict["bank_name"],
-        "bank_branch_code": register_dict["bank_branch_code"],
-        "bank_account_number": register_dict["bank_account_number"],
-        "birth_date": register_dict["birth_date"],
-        "id_emitted_by": register_dict["id_emitted_by"],
-        "identification_number": register_dict["identification_number"],
-        "taxpayer_id": register_dict["taxpayer_id"]
-    }
+    if (contract_page["existing_contract"] == "New Contract"):
+        contract_file = contract_page["contract_file"].file.read()
+        output_filepath = generate_document(contract_file, register_dict["identification_number"], contract_folder)
+        payload["contract_data"] = {}
+    else:
+        contract_file = open(f"contract_models/contract_template.docx", "rb").read()
+        contract_data = {
+            "started_at": register_dict["started_at"],
+            "name": register_dict["name"],
+            "position": register_dict["position"],
+            "number_address": register_dict["number_address"],
+            "complement_address": register_dict["complement_address"],
+            "district": register_dict["district"],
+            "address": register_dict["address"],
+            "country": register_dict["country"],
+            "zip_code": register_dict["zip_code"],
+            "personal_email": register_dict["personal_email"],
+            "internal_email": register_dict["internal_email"],
+            "phone_number": register_dict["phone_number"],
+            "salary": register_dict["salary"],
+            "bank_name": register_dict["bank_name"],
+            "bank_branch_code": register_dict["bank_branch_code"],
+            "bank_account_number": register_dict["bank_account_number"],
+            "birth_date": register_dict["birth_date"],
+            "id_emitted_by": register_dict["id_emitted_by"],
+            "identification_number": register_dict["identification_number"],
+            "taxpayer_id": register_dict["taxpayer_id"]
+        }
 
-    aw.set_data("contract_data", contract_data)
+        payload["contract_data"] = contract_data
 
-    output_filepath = generate_document(contract_file, register_dict["identification_number"], contract_folder, contract_data)
+        output_filepath = generate_document(contract_file, register_dict["identification_number"], contract_folder, contract_data)
 
-approval_page = (
-    Page()
-    .display("Do you approve the previous contract?")
-    .read_dropdown("Approve", ["Yes", "No"], key="approve")
-    .reactive(render_upload)
-    .run("Send")
-)
+    approval_page = (
+        Page()
+        .display("Do you approve the previous contract?")
+        .read_dropdown("Approve", ["Yes", "No"], key="approve")
+        .reactive(render_upload)
+        .run("Send")
+    )
 
-if (approval_page["approve"] == "No"):
-    open(output_filepath, "wb").write(approval_page["adj_contract_file"].file.read())
+    if (approval_page["approve"] == "No"):
+        open(output_filepath, "wb").write(approval_page["adj_contract_file"].file.read())
 
-document_filename = "Service Agreement and Other Provisions"
+    document_filename = "Service Agreement and Other Provisions"
 
-aw.set_data(
-    "contract_path",
-    {
-        "contract_filepath":output_filepath,
-        "contract_filename":document_filename, 
-    }
-)
+    contract_path = {
+            "contract_filepath":output_filepath,
+            "contract_filename":document_filename, 
+        }
+
+    payload["contract_path"] = contract_path
+
+    send_task("contract_info", payload)
+    task.complete()

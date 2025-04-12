@@ -1,5 +1,5 @@
 import abstra.forms as af
-import abstra.workflows as aw
+from abstra.tasks import get_tasks, send_task
 from datetime import datetime
 
 
@@ -11,30 +11,39 @@ def preprocessing_date(date):
         date = date.strftime("%Y/%m/%d")
     return date
 
-# get the data from workflow
-register_dict = aw.get_data("register_info")
+# get the data from the task payload
+tasks = get_tasks()
+for task in tasks:
 
-# set variables
-employee_name = register_dict["name"]
+    payload = task.get_payload()
 
-# form page to internal registration
-internal_info_page = (
-    af.Page()
-    .display("Team Additional Data", size="large")
-    .display(f"Please complete the following information about {employee_name}:")
-    .read_date("Start at", key="started_at")
-    .read("Position", key="position")
-    .read("Department", key="department")
-    .read_email("Internal Email", key="internal_email")
-    .read_currency("Salary", currency="USD", initial_value=0, key="salary")
-    .read_number("Weekly Work Hours", key="weekly_work_hours")
-    .run()
-)
+    mismatch_dict = payload["mismatch_info"]
+    register_dict = payload["register_info"]
+    paths_dict = payload["paths"]
 
-register_dict.update(internal_info_page)
+    # set variables
+    employee_name = register_dict["name"]
 
-register_dict["started_at"] = preprocessing_date(register_dict["started_at"])
+    # form page to internal registration
+    internal_info_page = (
+        af.Page()
+        .display("Team Additional Data", size="large")
+        .display(f"Please complete the following information about {employee_name}:")
+        .read_date("Start at", key="started_at")
+        .read("Position", key="position")
+        .read("Department", key="department")
+        .read_email("Internal Email", key="internal_email")
+        .read_currency("Salary", currency="USD", initial_value=0, key="salary")
+        .read_number("Weekly Work Hours", key="weekly_work_hours")
+        .run()
+    )
 
-# updates register_info variable on the workflow
-aw.set_data("register_info", register_dict)
+    register_dict.update(internal_info_page)
 
+    register_dict["started_at"] = preprocessing_date(register_dict["started_at"])
+
+    # updates register_info variable on the task payload
+    payload["register_info"] = register_dict
+
+    send_task("internal_info_registered", payload)
+    task.complete()

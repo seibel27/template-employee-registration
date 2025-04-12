@@ -1,11 +1,9 @@
 from abstra.forms import *
 from abstra.common import get_persistent_dir
 from datetime import datetime
-import abstra.workflows as aw
+from abstra.tasks import send_task
 import dotenv 
 import os
-
-aw.set_title("employee_registration_workflow")
 
 assignee = os.getenv("HIRING_RESPONSIBLE_EMAIL")
 
@@ -125,14 +123,12 @@ destination_dir.joinpath(path_back_page).write_bytes(id_back_page.file.read())
 destination_dir.joinpath(path_address_proof).write_bytes(address_proof.file.read())
 
 # forwarding data to the next stage
-aw.set_data(
-    "assignee",
-    [assignee]
-)
+payload = {}
+
+payload["assignee"] = assignee
 #example@example.com
-aw.set_data(
-    "register_info",
-    {
+
+payload["register_info"] = {
         "name": name,
         "personal_email": personal_email,
         "birth_date": birth_date,
@@ -151,18 +147,13 @@ aw.set_data(
         "bank_account_number": bank_account_number,
         "bank_branch_code": bank_branch_code,
     }
-)
 
-aw.set_data(
-    "paths",
-    {
+payload["paths"] = {
         "id_front_page": f"{destination_dir.joinpath(path_front_page)}",
         "id_back_page": f"{destination_dir.joinpath(path_back_page)}",
         "address_proof": f"{destination_dir.joinpath(path_address_proof)}"
     }
-)
 
-aw.set_data(
-    "employee_approval_email",
-    personal_email
-)
+payload["employee_approval_email"] = personal_email
+
+send_task("registration", payload)

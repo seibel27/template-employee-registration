@@ -1,12 +1,15 @@
 import abstra.forms as af
-import abstra.workflows as aw
+from abstra.tasks import get_tasks, send_task
 import pandas as pd
 
-# get the data from workflow
-mismatch_dict = aw.get_data("mismatch_info")
-register_dict = aw.get_data("register_info")
-paths_dict = aw.get_data("paths")
+# get the data from the task payload
+tasks = get_tasks()
+task = tasks[0]
+payload = task.get_payload()
 
+mismatch_dict = payload["mismatch_info"]
+register_dict = payload["register_info"]
+paths_dict = payload["paths"]
 
 # replace "_" by " " on the key and captalizes it to display as label on the form
 def transform_to_label(key):
@@ -32,4 +35,7 @@ for key in mismatch_dict.keys():
     if transform_to_label(key) in change_register_page.keys():
         register_dict[key] = change_register_page[transform_to_label(key)]
 
-aw.set_data("register_info", register_dict)
+payload["register_info"] = register_dict
+
+send_task("partial_registration", payload)
+task.complete()

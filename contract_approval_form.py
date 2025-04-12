@@ -1,14 +1,7 @@
 import abstra.forms as af
-import abstra.workflows as aw
+from abstra.tasks import get_tasks, send_task
 from abstra.tables import insert 
 
-contract_dict = aw.get_data("contract_path")
-register_dict = aw.get_data("register_info")
-contract_data_dict = aw.get_data("contract_data")
-
-contract_filename = contract_dict["contract_filename"]
-employee_name = register_dict["name"]
-contract_filepath = contract_dict["contract_filepath"]
 
 # replace "_" by " " on the key and captalizes it to display as label on the form
 def transform_to_label(key):
@@ -17,19 +10,33 @@ def transform_to_label(key):
 
 # checks with the user if the data is correct
 def render_info_update(partial):
+    print("printing partial")
+    print(partial)
+    print("printing partial keys")
+    print(partial.keys())
     if "is_data_error" in partial.keys():
+        print("printing partial[is_data_error] in the first stage")
+        print(partial["is_data_error"])
         if (partial["is_data_error"] == "Yes"):
+            print("printing partial[is_data_error] in the second stage")
+            print(partial["is_data_error"])
+            print("i got to the first if")
             update_page = af.Page().display("Please check the following information regarding your data")
             if contract_data_dict:
+                print("i got to the second if")
                 for key in contract_data_dict.keys():
                     update_page = (
                         update_page.read(f"{transform_to_label(key)}:", key=key, initial_value=contract_data_dict[key])
                     )
+                    print("im inside the for loop")
             else:
+                print("i got to the else")
                 for key in register_dict.keys():
                     update_page = (
                         update_page.read(f"{transform_to_label(key)}:", key=key, initial_value=register_dict[key])
-                    )     
+                    )
+                    print("im inside the second for loop")
+            print("im gonna return the update page")
             return update_page
 
 
@@ -53,52 +60,71 @@ def render_contract_comments(partial):
                 .reactive(render_info_update)
             )
 
+# defining outside the loop
+register_dict = {}
+contract_dict = {}
+contract_data_dict = {}
+# get the data from the task payload
+tasks = get_tasks()
+for task in tasks:
 
-# page about the contract approval or rejection 
-contract_status_page =(
-    af.Page()
-    .display(f"Document Approval - {contract_filename}", size="large")
-    .display(
-        f'Please read the "{contract_filename}" document related to the hiring of {employee_name} and approve/reject it'
-    )
-    .display_file(contract_filepath, dowload_text="Click here to download the document")
-    .run(actions=["Approve", "Reject"])
-)
+    payload = task.get_payload()
 
-if contract_status_page.action == "Reject":
-    contract_reject_page = (
+    register_dict = payload["register_info"]
+    contract_dict = payload["contract_path"]
+    contract_data_dict = payload["contract_data"]
+
+    contract_filename = contract_dict["contract_filename"]
+    employee_name = register_dict["name"]
+    contract_filepath = contract_dict["contract_filepath"]
+
+    # page about the contract approval or rejection 
+    contract_status_page =(
         af.Page()
-        .read_multiple_choice(
-            "Does the contract have any error or a clause you disagree with?",
-            ["Yes", "No"],
-            key="is_contract_error"
+        .display(f"Document Approval - {contract_filename}", size="large")
+        .display(
+            f'Please read the "{contract_filename}" document related to the hiring of {employee_name} and approve/reject it'
         )
-        .reactive(render_contract_comments)
-        .run("Send")
+        .display_file(contract_filepath, dowload_text="Click here to download the document")
+        .run(actions=["Approve", "Reject"])
     )
 
-    aw.set_data("is_contract_approved", False)
+    if contract_status_page.action == "Reject":
+        contract_reject_page = (
+            af.Page()
+            .read_multiple_choice(
+                "Does the contract have any error or a clause you disagree with?",
+                ["Yes", "No"],
+                key="is_contract_error"
+            )
+            .reactive(render_contract_comments)
+            .run("Send")
+        )
 
-    data_error_log = {}
-    if (contract_reject_page["is_data_error"] == "Yes"):
-        if contract_data_dict:
-            for key in contract_data_dict.keys():
-                if (key in contract_reject_page.keys()):
-                    if contract_data_dict[key] != contract_reject_page[key]:
-                        data_error_log[key] = [contract_data_dict[key], contract_reject_page[key]]
-        else:
-            for key in register_dict.keys():
-                if key in contract_reject_page.keys():
-                    if register_dict[key] != contract_reject_page[key]:
-                        data_error_log[key] = [register_dict[key], contract_reject_page[key]]
+        payload["approval_status"] = "not_approved"
+        data_error_log = {}
+        if (contract_reject_page["is_data_error"] == "Yes"):
+            if contract_data_dict:
+                for key in contract_data_dict.keys():
+                    if (key in contract_reject_page.keys()):
+                        if contract_data_dict[key] != contract_reject_page[key]:
+                            data_error_log[key] = [contract_data_dict[key], contract_reject_page[key]]
+            else:
+                for key in register_dict.keys():
+                    if key in contract_reject_page.keys():
+                        if register_dict[key] != contract_reject_page[key]:
+                            data_error_log[key] = [register_dict[key], contract_reject_page[key]]
 
-    aw.set_data("data_error_log", data_error_log)
-    aw.set_data("comments", contract_reject_page.get("comments", ""))
+        payload["data_error_log"] = data_error_log
+        payload["comments"] = contract_reject_page.get("comments", "")
 
-else:
-    aw.set_data("is_contract_approved", True)
+    else:
+        payload["approval_status"] = "approved"
 
-    adding_member = insert(
-        "employee_register",
-        register_dict,
-    )
+        adding_member = insert(
+            "employee_register",
+            register_dict,
+        )
+
+    send_task("approval_status", payload)
+    task.complete()

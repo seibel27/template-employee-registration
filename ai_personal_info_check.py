@@ -1,9 +1,11 @@
 from abstra.ai import prompt
-import abstra.workflows as aw
+from abstra.tasks import get_trigger_task, send_task
 
-# get the data from workflow
-register_dict = aw.get_data("register_info")
-file_paths = aw.get_data("paths")
+# get the data from trigger task
+task = get_trigger_task()
+payload = task.get_payload()
+register_dict = payload["register_info"]
+file_paths = payload["paths"]
 
 
 # set variables
@@ -69,9 +71,11 @@ ai_check_dict.update(address_proof_ans)
 
 # sets boolean variable to thread that represents if passed on the ai test
 if all(ai_check_dict.values()):
-    aw.set_data("is_register_info_match", True)
+    # sends matches to the task
+    send_task("ai_match", payload)
 else:
-    aw.set_data("is_register_info_match", False)
+    # sets mismatches to the task
+    payload["mismatch_info"] = ai_check_dict
+    send_task("ai_mismatch", payload)
 
-# sets mismatches varible to thread
-aw.set_data("mismatch_info", ai_check_dict)
+task.complete()

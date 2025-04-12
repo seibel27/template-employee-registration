@@ -1,23 +1,14 @@
 {
   "workspace": {
-    "id": null,
     "name": "Untitled Workspace",
+    "language": "en",
     "theme": null,
     "logo_url": null,
     "favicon_url": null,
-    "brand_name": null,
+    "brand_name": "",
     "main_color": "#1BC7B1",
-    "font_color": null,
     "font_family": null,
-    "language": "en"
-  },
-  "kanban": {
-    "access_control": {
-      "is_public": false,
-      "required_roles": [
-        "Admin"
-      ]
-    }
+    "font_color": null
   },
   "home": {
     "access_control": {
@@ -44,16 +35,16 @@
       "restart_button_text": null,
       "file": "employee_registration_form.py",
       "workflow_position": [
-        60.0,
-        -12.0
+        -60,
+        -150
       ],
       "transitions": [
         {
           "target_id": "ac882fa4-6ba6-4d0a-8c29-2aa7a6bcfa3b",
           "target_type": "scripts",
-          "type": "forms:finished",
+          "type": "task",
           "id": "z07lehq",
-          "condition_value": null
+          "task_type": "registration"
         }
       ],
       "notification_trigger": {
@@ -81,16 +72,23 @@
       "restart_button_text": null,
       "file": "divergence_on_register_form.py",
       "workflow_position": [
-        780.0,
-        -264.0
+        660,
+        0
       ],
       "transitions": [
         {
-          "target_id": "eeff6cf0-31b8-496a-ae33-7b8f99f37df4",
-          "target_type": "conditions",
-          "type": "forms:finished",
-          "id": "ldrq2nr",
-          "condition_value": null
+          "target_id": "df453b48-f0cd-401a-99d0-94a29429be11",
+          "target_type": "forms",
+          "type": "task",
+          "id": "e1gqewy",
+          "task_type": "manual_match"
+        },
+        {
+          "target_id": "37c72d40-c045-41b9-a35c-c2066ee9be4c",
+          "target_type": "forms",
+          "type": "task",
+          "id": "68h9799",
+          "task_type": "manual_mismatch"
         }
       ],
       "notification_trigger": {
@@ -118,16 +116,16 @@
       "restart_button_text": null,
       "file": "internal_registration_form.py",
       "workflow_position": [
-        792.0,
-        -36.0
+        225,
+        0
       ],
       "transitions": [
         {
           "target_id": "7b334bb8-3cf1-4580-89b2-d3841c09321e",
           "target_type": "forms",
-          "type": "forms:finished",
+          "type": "task",
           "id": "7aync2y",
-          "condition_value": null
+          "task_type": "internal_info_registered"
         }
       ],
       "notification_trigger": {
@@ -155,16 +153,16 @@
       "restart_button_text": null,
       "file": "generate_contract_form.py",
       "workflow_position": [
-        792.0,
-        96.0
+        225,
+        135
       ],
       "transitions": [
         {
           "target_id": "93d35faa-a217-47db-8217-90a95af545b7",
           "target_type": "forms",
-          "type": "forms:finished",
+          "type": "task",
           "id": "ku1gf7u",
-          "condition_value": null
+          "task_type": "contract_info"
         }
       ],
       "notification_trigger": {
@@ -192,16 +190,16 @@
       "restart_button_text": null,
       "file": "contract_approval_form.py",
       "workflow_position": [
-        792.0,
-        204.0
+        615,
+        135
       ],
       "transitions": [
         {
           "target_id": "de440cca-cee8-4e31-8311-b1cfc0e51d66",
-          "target_type": "conditions",
-          "type": "forms:finished",
+          "target_type": "scripts",
+          "type": "task",
           "id": "wug707x",
-          "condition_value": null
+          "task_type": "approval_status"
         }
       ],
       "notification_trigger": {
@@ -229,16 +227,16 @@
       "restart_button_text": null,
       "file": "partial_employee_registration_form.py",
       "workflow_position": [
-        1116.0,
-        -432.0
+        675,
+        -270
       ],
       "transitions": [
         {
           "target_id": "ac882fa4-6ba6-4d0a-8c29-2aa7a6bcfa3b",
           "target_type": "scripts",
-          "type": "forms:finished",
+          "type": "task",
           "id": "q6a956o",
-          "condition_value": null
+          "task_type": "partial_registration"
         }
       ],
       "notification_trigger": {
@@ -266,16 +264,16 @@
       "restart_button_text": null,
       "file": "manual_contract_upload_form.py",
       "workflow_position": [
-        1116.0,
-        492.0
+        990,
+        210
       ],
       "transitions": [
         {
-          "target_id": "fff731ec-a047-455b-b028-e271b01f5be3",
-          "target_type": "conditions",
-          "type": "forms:finished",
-          "id": "s5jxyo6",
-          "condition_value": null
+          "target_id": "93d35faa-a217-47db-8217-90a95af545b7",
+          "target_type": "forms",
+          "type": "task",
+          "id": "36nwvhp",
+          "task_type": "manually_approved"
         }
       ],
       "notification_trigger": {
@@ -295,16 +293,23 @@
       "title": "Abstra AI Personal Information Check",
       "is_initial": false,
       "workflow_position": [
-        60.0,
-        -168.0
+        345,
+        -150
       ],
       "transitions": [
         {
-          "target_id": "bf346c28-3df9-4de3-b2f2-fc4c45aad375",
-          "target_type": "conditions",
-          "type": "scripts:finished",
-          "id": "v24y7jv",
-          "condition_value": null
+          "target_id": "df453b48-f0cd-401a-99d0-94a29429be11",
+          "target_type": "forms",
+          "type": "task",
+          "id": "00cny7b",
+          "task_type": "ai_match"
+        },
+        {
+          "target_id": "46081eb9-bbec-4074-9708-b9a2ebed8acd",
+          "target_type": "forms",
+          "type": "task",
+          "id": "dsnw8tw",
+          "task_type": "ai_mismatch"
         }
       ]
     },
@@ -314,103 +319,39 @@
       "title": "Contract Signature",
       "is_initial": false,
       "workflow_position": [
-        540.0,
-        492.0
+        615,
+        405
       ],
       "transitions": []
-    }
-  ],
-  "iterators": [],
-  "conditions": [
-    {
-      "id": "bf346c28-3df9-4de3-b2f2-fc4c45aad375",
-      "variable_name": "is_register_info_match",
-      "workflow_position": [
-        432.0,
-        -168.0
-      ],
-      "transitions": [
-        {
-          "target_id": "46081eb9-bbec-4074-9708-b9a2ebed8acd",
-          "target_type": "forms",
-          "type": "conditions:patternMatched",
-          "id": "4zhpinw",
-          "condition_value": "False"
-        },
-        {
-          "target_id": "df453b48-f0cd-401a-99d0-94a29429be11",
-          "target_type": "forms",
-          "type": "conditions:patternMatched",
-          "id": "3uq9r8z",
-          "condition_value": "True"
-        }
-      ]
-    },
-    {
-      "id": "eeff6cf0-31b8-496a-ae33-7b8f99f37df4",
-      "variable_name": "is_manual_checked",
-      "workflow_position": [
-        1116.0,
-        -156.0
-      ],
-      "transitions": [
-        {
-          "target_id": "df453b48-f0cd-401a-99d0-94a29429be11",
-          "target_type": "forms",
-          "type": "conditions:patternMatched",
-          "id": "wnmbvb4",
-          "condition_value": "True"
-        },
-        {
-          "target_id": "37c72d40-c045-41b9-a35c-c2066ee9be4c",
-          "target_type": "forms",
-          "type": "conditions:patternMatched",
-          "id": "xyw8u2m",
-          "condition_value": "False"
-        }
-      ]
     },
     {
       "id": "de440cca-cee8-4e31-8311-b1cfc0e51d66",
-      "variable_name": "is_contract_approved",
+      "file": "condition_de440cca.py",
+      "title": "Check Status",
+      "is_initial": false,
       "workflow_position": [
-        792.0,
-        324.0
+        630,
+        285
       ],
       "transitions": [
         {
           "target_id": "d6e146bc-ca21-4839-9511-7d54be60c168",
           "target_type": "forms",
-          "type": "conditions:patternMatched",
+          "type": "task",
           "id": "n6pvk3b",
-          "condition_value": "False"
+          "task_type": "not_approved"
         },
         {
           "target_id": "d9256792-9112-4fa8-af9e-6d5c9051de92",
           "target_type": "scripts",
-          "type": "conditions:patternMatched",
+          "type": "task",
           "id": "4dzg40q",
-          "condition_value": "True"
-        }
-      ]
-    },
-    {
-      "id": "fff731ec-a047-455b-b028-e271b01f5be3",
-      "variable_name": "give_hiring",
-      "workflow_position": [
-        1116.0,
-        204.0
-      ],
-      "transitions": [
-        {
-          "target_id": "93d35faa-a217-47db-8217-90a95af545b7",
-          "target_type": "forms",
-          "type": "conditions:patternMatched",
-          "id": "p2bv2l9",
-          "condition_value": "False"
+          "task_type": "approved"
         }
       ]
     }
   ],
-  "version": "11.0"
+  "agents": [],
+  "clients": [],
+  "version": "13.0"
 }
