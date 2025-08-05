@@ -25,7 +25,7 @@
         -150
       ],
       "id": "9712d884-82fc-4d79-b83e-ccc7e8b27941",
-      "file": "employee_registration_form.py",
+      "file": "form_personal_registration.py",
       "transitions": [
         {
           "id": "z07lehq",
@@ -35,7 +35,7 @@
           "task_type": "registration"
         }
       ],
-      "title": "Personal Registration Form",
+      "title": "Personal Registration",
       "welcome_title": null,
       "start_button_text": null,
       "auto_start": false,
@@ -62,7 +62,7 @@
         0
       ],
       "id": "46081eb9-bbec-4074-9708-b9a2ebed8acd",
-      "file": "divergence_on_register_form.py",
+      "file": "form_verify_personal_information.py",
       "transitions": [
         {
           "id": "e1gqewy",
@@ -79,7 +79,7 @@
           "task_type": "manual_mismatch"
         }
       ],
-      "title": "Verify Personal Information Form",
+      "title": "Verify Personal Information",
       "welcome_title": null,
       "start_button_text": null,
       "auto_start": false,
@@ -106,7 +106,7 @@
         0
       ],
       "id": "df453b48-f0cd-401a-99d0-94a29429be11",
-      "file": "internal_registration_form.py",
+      "file": "form_internal_registration.py",
       "transitions": [
         {
           "id": "7aync2y",
@@ -143,7 +143,7 @@
         135
       ],
       "id": "7b334bb8-3cf1-4580-89b2-d3841c09321e",
-      "file": "generate_contract_form.py",
+      "file": "form_generate_contract.py",
       "transitions": [
         {
           "id": "ku1gf7u",
@@ -180,7 +180,7 @@
         135
       ],
       "id": "93d35faa-a217-47db-8217-90a95af545b7",
-      "file": "contract_approval_form.py",
+      "file": "form_contract_approval.py",
       "transitions": [
         {
           "id": "02fuvic",
@@ -224,7 +224,7 @@
         -270
       ],
       "id": "37c72d40-c045-41b9-a35c-c2066ee9be4c",
-      "file": "partial_employee_registration_form.py",
+      "file": "form_partial_personal_registration.py",
       "transitions": [
         {
           "id": "q6a956o",
@@ -234,7 +234,7 @@
           "task_type": "partial_registration"
         }
       ],
-      "title": "Partial Personal Registration Form",
+      "title": "Partial Personal Registration",
       "welcome_title": null,
       "start_button_text": null,
       "auto_start": false,
@@ -261,7 +261,7 @@
         135
       ],
       "id": "d6e146bc-ca21-4839-9511-7d54be60c168",
-      "file": "manual_contract_upload_form.py",
+      "file": "form_manual_contract_upload.py",
       "transitions": [
         {
           "id": "36nwvhp",
@@ -300,7 +300,7 @@
         -150
       ],
       "id": "ac882fa4-6ba6-4d0a-8c29-2aa7a6bcfa3b",
-      "file": "ai_personal_info_check.py",
+      "file": "tasklet_abstra_ai_personal_information_check.py",
       "transitions": [
         {
           "id": "00cny7b",
@@ -326,7 +326,7 @@
         345
       ],
       "id": "d9256792-9112-4fa8-af9e-6d5c9051de92",
-      "file": "send_contract_to_sign.py",
+      "file": "tasklet_contract_signature.py",
       "transitions": [],
       "title": "Contract Signature",
       "is_initial": false
